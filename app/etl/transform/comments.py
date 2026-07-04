@@ -39,11 +39,14 @@ def run_pipeline(comments: pd.DataFrame):
 
     #11 removes possible new duplicates 
     df = df.drop_duplicates(subset=['text_processed'], keep='first')
+
+    df['text_no_stopwords'] = df['text_processed'].apply(remove_stopwords)
+
     return df
 
 def predict_labels(comments:pd.DataFrame):
     df = comments.copy()
-    df = df[['video_id', 'text', 'text_processed']]
+    df = df[['video_id', 'text', 'text_processed', 'text_no_stopwords']]
 
     predictions = predict(df["text_processed"])
 

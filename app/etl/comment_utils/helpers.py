@@ -2,7 +2,7 @@ import re, regex
 import html
 import emoji
 
-from app.config.text_config import CONTRACTION_MAPPING, ENGLISH_STOPWORDS, MALAY_STOPWORDS, SLANG_MAPPING
+from app.config.text_config import CONTRACTION_MAPPING, ENGLISH_STOPWORDS_FULL, MALAY_STOPWORDS_FULL, SLANG_MAPPING
 
 latin_pattern = re.compile(r"[A-Za-z]")
 
@@ -97,9 +97,16 @@ def keep_latin_and_emoji(text):
     return ''.join(result)
 
 #------------------------------------------------------------------------------
-all_stopwords = ENGLISH_STOPWORDS.union(MALAY_STOPWORDS)
+all_stopwords = ENGLISH_STOPWORDS_FULL.union(MALAY_STOPWORDS_FULL)
 
 def remove_stopwords(text):
-    words = text.split()
-    filtered = [w for w in words if w.lower() not in all_stopwords]
+    # 1. Convert to lowercase and remove all punctuation/emojis
+    clean_text = re.sub(r'[^\w\s]', '', str(text).lower())
+    
+    # 2. Split into clean words
+    words = clean_text.split()
+    
+    # 3. Filter out stopwords (strip is no longer needed)
+    filtered = [w for w in words if w not in all_stopwords]
+    
     return " ".join(filtered)
