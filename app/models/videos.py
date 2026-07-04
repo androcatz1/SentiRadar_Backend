@@ -8,7 +8,7 @@ class VideosModel(Base):
     __tablename__ = "video_metrics_test"
 
     id: Mapped[int] = mapped_column(Integer, primary_key= True, autoincrement=True)
-    video_id: Mapped[str] = mapped_column(String, primary_key=True)
+    video_id: Mapped[str] = mapped_column(String)
     title: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)
     tags: Mapped[str] = mapped_column(String)
