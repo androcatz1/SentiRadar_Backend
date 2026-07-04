@@ -7,7 +7,7 @@ from app.etl.load.videos import insert_into_postgres
 async def new_video_pipeline(db: AsyncSession, video_id: str):
     rows = await fetch_video_metadata(video_id)
     if rows is None:
-        raise ValueError ("ID Does Not Exist")
+        raise ValueError ("Video ID Does Not Exist")
     df = transform(rows)
     df_labelled = label_topic(df)
 
