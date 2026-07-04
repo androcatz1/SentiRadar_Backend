@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.videos import UserInputSchema
@@ -14,8 +14,15 @@ async def get_new_video(db: AsyncSession = Depends(get_db_static), video: UserIn
     if exist:
         return {"status": "Exists", "video_id": video.video_id}
     
-    status = await new_video_pipeline(db, video.video_id)
-    return {"status": "New Video", "video_id": video.video_id, "inserted": status}
+    try:
+        inserted = await new_video_pipeline(db, video.video_id)
+        return {"status": "New Video", "video_id": video.video_id, "inserted": inserted}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"status": "error", "message": str(e)}
+        )
+
 
 # video level analysis
 @router.get("/{video_id}/dashboard")

@@ -32,9 +32,12 @@ async def fetch_video_metadata(video_id):
     quota_used += 1
 
     items = r.json().get("items", [])
+    
+    if items:
+        video = items[0]
 
-    video = items[0]
-
+    else:
+        return None
     snippet = video["snippet"]
     stats = video.get("statistics", {})
     video_id = video["id"]
