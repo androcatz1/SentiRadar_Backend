@@ -9,6 +9,7 @@ class CommentsModel(Base):
     video_id: Mapped[str] = mapped_column(String)
     text: Mapped[str] = mapped_column(String)
     text_processed: Mapped[str] = mapped_column(String)
+    text_no_stopwords: Mapped[str] = mapped_column(String)
     label: Mapped[int] = mapped_column(Integer)
 
 
