@@ -1,21 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, exists
 
 from app.models.videos import VideosModel
 from app.schemas.analytics import Filters
 
-
-async def check_video_id_exist(db: AsyncSession, video_id:str):
-    query = select(exists().where(VideosModel.video_id == video_id))
-    
-    result = await db.execute(query)
-    
-    return result.scalar() or False
-
-
-async def get_filtered_video_ids(db: AsyncSession, filters: Filters):
-    query = select(VideosModel.video_id)
-# -----------------------------------------------------------------------------
+def query_filters(query, filters:Filters):
     if filters.channel_title:
         query = query.where(VideosModel.channel_title == filters.channel_title)
     if filters.topic:
@@ -26,7 +14,5 @@ async def get_filtered_video_ids(db: AsyncSession, filters: Filters):
         query = query.where(VideosModel.published_at >= filters.start_date)
     if filters.end_date:
         query = query.where(VideosModel.published_at <= filters.end_date)
-# -----------------------------------------------------------------------------
-    result = await db.execute(query)
 
-    return list(result.scalars().all())
+    return query
