@@ -8,6 +8,7 @@ from app.services.videos import check_video_id_exist
 
 router = APIRouter(prefix="/api/videos")
 
+# new video inputs
 @router.get("/get_video")
 async def get_new_video(db: AsyncSession = Depends(get_db_static), video: UserInputSchema = Depends()):  
     exist = await check_video_id_exist(db, video.video_id)
