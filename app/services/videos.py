@@ -3,6 +3,7 @@ from sqlalchemy import select, exists
 
 from app.models.videos import VideosModel
 from app.schemas.analytics import Filters
+from app.services.helpers import query_filters
 
 
 async def check_video_id_exist(db: AsyncSession, video_id:str):
@@ -16,16 +17,7 @@ async def check_video_id_exist(db: AsyncSession, video_id:str):
 async def get_filtered_video_ids(db: AsyncSession, filters: Filters):
     query = select(VideosModel.video_id)
 # -----------------------------------------------------------------------------
-    if filters.channel_title:
-        query = query.where(VideosModel.channel_title == filters.channel_title)
-    if filters.topic:
-        query = query.where(VideosModel.topic == filters.topic)
-    if filters.platform:
-        query = query.where(VideosModel.platform == filters.platform)
-    if filters.start_date:
-        query = query.where(VideosModel.published_at >= filters.start_date)
-    if filters.end_date:
-        query = query.where(VideosModel.published_at <= filters.end_date)
+    query = query_filters(db, filters)
 # -----------------------------------------------------------------------------
     result = await db.execute(query)
 
