@@ -33,6 +33,12 @@ class Settings:
     
     YOUTUBE_REGEX = r"(?:v=|\/shorts\/|\/embed\/|\/v\/|youtu\.be\/)([a-zA-Z0-9_-]{11})"
 
+    SENTIMENT_MAP = {
+        0.0: "neutral",
+        1.0: "positive",
+        2.0: "negative"
+    }
+
 
 
 class Gemini:
