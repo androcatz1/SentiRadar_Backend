@@ -3,8 +3,9 @@ import pandas as pd
 import asyncio
 
 from collections import Counter
-from sqlalchemy import func, select, desc, asc, case, Float, text
+from sqlalchemy import func, select, desc, asc, case, Float, text, literal_column
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import get_args
 
 
 from app.models.videos import VideosModel
@@ -13,6 +14,7 @@ from app.schemas.analytics import Filters, TopVideosQuery, HeatmapQuery, Scatter
 from app.services.helpers import query_filters
 
 async def get_video_dashboard_stats(db: AsyncSession, filters: Filters) -> dict:
+    # 1. Build the base aggregation query selection matrix
     query = select(
         func.count(VideosModel.video_id).label("total_videos"),
         func.sum(VideosModel.views).label("total_views"),
@@ -24,22 +26,48 @@ async def get_video_dashboard_stats(db: AsyncSession, filters: Filters) -> dict:
         func.sum(VideosModel.neutral).label("total_neutral"),
         func.sum(VideosModel.negative).label("total_negative")
     )
-# --------------------------------------------------------------------------------------    
-    query = query_filters(query, filters)
-# --------------------------------------------------------------------------------------    
-
-    result = await db.execute(query)
     
+    # 2. Safely apply your external dynamic query filters
+    query = query_filters(query, filters)
+    
+    # 3. Execute exactly once (Extract once to protect result stream state)
+    result = await db.execute(query)
     row = result.mappings().one_or_none()
+    
+    # 4. Handle edge cases where your filtered query returns completely empty rows
+    if not row or row["total_videos"] == 0:
+        return {
+            "total_videos": 0, "total_views": 0, "total_likes": 0, "total_comments": 0,
+            "avg_duration": 0.0, "avg_engagement_rate": 0.0,
+            "sentiment_distribution": {"positive": 0, "neutral": 0, "negative": 0}
+        }
+        
+    # 5. Format and convert SQL Decimal types to cleanly rounded Python primitives
+    return {
+        "total_videos": int(row["total_videos"]),
+        "total_views": int(row["total_views"] or 0),
+        "total_likes": int(row["total_likes"] or 0),
+        "total_comments": int(row["total_comments"] or 0),
+        "avg_duration": round(float(row["avg_duration"] or 0.0), 2),
+        "avg_engagement_rate": round(float(row["avg_engagement_rate"] or 0.0), 4),
+        "sentiment_distribution": {
+            "positive": int(row["total_positive"] or 0),
+            "neutral": int(row["total_neutral"] or 0),
+            "negative": int(row["total_negative"] or 0)
+        }
+    }
 
-    return row
-
-async def get_stats(column, db: AsyncSession, filters: Filters) -> dict:
+async def get_stats(column: str, db: AsyncSession, filters: Filters) -> list[dict]:
+    # 1. Dynamically target the requested grouping column from your model schema
     group_column = getattr(VideosModel, column)
     
-    total_sentiment = func.nullif(
-        func.sum(VideosModel.positive) + func.sum(VideosModel.neutral) + func.sum(VideosModel.negative),0)
+    # 2. Establish your safe group-level total sentiment denominator
+    sum_pos = func.sum(VideosModel.positive)
+    sum_neu = func.sum(VideosModel.neutral)
+    sum_neg = func.sum(VideosModel.negative)
+    total_sentiment = func.nullif(sum_pos + sum_neu + sum_neg, 0)
 
+    # 3. Assemble your core query logic matrix
     query = select(
         group_column.label("label"),
         func.count(VideosModel.video_id).label("total_videos"),
@@ -50,23 +78,55 @@ async def get_stats(column, db: AsyncSession, filters: Filters) -> dict:
         func.avg(VideosModel.likes).label("avg_likes"),
         func.avg(VideosModel.duration_mins).label("avg_duration"),
         func.avg(VideosModel.engagement_rate).label("avg_engagement_rate"),
-        func.sum(VideosModel.positive).label("total_positive"),
-        func.sum(VideosModel.neutral).label("total_neutral"),
-        func.sum(VideosModel.negative).label("total_negative"),
-
-        ((func.sum(VideosModel.positive) * 100.0) / total_sentiment).label("pct_positive"),
-        ((func.sum(VideosModel.neutral) * 100.0) / total_sentiment).label("pct_neutral"),
-        ((func.sum(VideosModel.negative) * 100.0) / total_sentiment).label("pct_negative")
+        sum_pos.label("total_positive"),
+        sum_neu.label("total_neutral"),
+        sum_neg.label("total_negative"),
+        ((sum_pos * 100.0) / total_sentiment).label("pct_positive"),
+        ((sum_neu * 100.0) / total_sentiment).label("pct_neutral"),
+        ((sum_neg * 100.0) / total_sentiment).label("pct_negative")
     ).group_by(group_column)
-# --------------------------------------------------------------------------------------    
-    query = query_filters(query, filters)
-# --------------------------------------------------------------------------------------    
 
+    # 4. Integrate your global helper filter function
+    query = query_filters(query, filters)
+
+    # 5. Execute and extract all matching row items
     result = await db.execute(query)
+    rows = result.mappings().all()
     
-    row = result.mappings().all()
-    
-    return row
+    # 6. Transform the row collection payload into structured JSON arrays
+    formatted_stats = []
+    for row in rows:
+        # Skip empty unassigned labels to protect frontend presentation widgets
+        if row["label"] is None:
+            continue
+
+        formatted_stats.append({
+            "label": str(row["label"]),
+            "total_videos": int(row["total_videos"]),
+            "total_views": int(row["total_views"] or 0),
+            "total_likes": int(row["total_likes"] or 0),
+            "total_comments": int(row["total_comments"] or 0),
+            "avg_views": round(float(row["avg_views"] or 0.0), 2),
+            "avg_likes": round(float(row["avg_likes"] or 0.0), 2),
+            "avg_duration": round(float(row["avg_duration"] or 0.0), 2),
+            "avg_engagement_rate": round(float(row["avg_engagement_rate"] or 0.0), 4),
+            
+            # Cleanly organized raw counts nested sub-object block
+            "sentiment_counts": {
+                "positive": int(row["total_positive"] or 0),
+                "neutral": int(row["total_neutral"] or 0),
+                "negative": int(row["total_negative"] or 0)
+            },
+            
+            # Cleanly organized normalized percentage ratios nested block
+            "sentiment_percentages": {
+                "positive": round(float(row["pct_positive"] or 0.0), 2),
+                "neutral": round(float(row["pct_neutral"] or 0.0), 2),
+                "negative": round(float(row["pct_negative"] or 0.0), 2)
+            }
+        })
+        
+    return formatted_stats
 
 
 async def get_top_videos(db: AsyncSession, filters: Filters, sort_params: TopVideosQuery):
@@ -121,8 +181,8 @@ async def get_top_keywords(db: AsyncSession, video_ids:list):
 
     word_counts = Counter(all_words)
 
-    word_freq_df = pd.DataFrame(word_counts.items(), columns=["text", "value"]) # Renamed to match typical charting formats
-    word_freq_df = word_freq_df.sort_values(by="value", ascending=False)
+    word_freq_df = pd.DataFrame(word_counts.items(), columns=["word", "freq"]) # Renamed to match typical charting formats
+    word_freq_df = word_freq_df.sort_values(by="freq", ascending=False)
 
     # take top 25 words for keyword frequency chart
     top_words = word_freq_df.head(25).to_dict(orient="records")
@@ -258,9 +318,9 @@ async def get_generic_scatter_plot(db: AsyncSession, filters: Filters, params: S
 
     # 3. Axis mapping registry
     axis_mappings = {
-        "views": VideosModel.views,
-        "likes": VideosModel.likes,
-        "comments_count": VideosModel.comments_count,
+        "views": VideosModel.log10_views,
+        "likes": VideosModel.log10_likes,
+        "comments_count": VideosModel.log10_comments_count,
         "negative_ratio": negative_pct_expr,
         "positive_ratio": positive_pct_expr
     }
@@ -270,7 +330,10 @@ async def get_generic_scatter_plot(db: AsyncSession, filters: Filters, params: S
     expr_y = axis_mappings.get(params.y)
     
     # 4. Extract the requested COLOR_BY database column dynamically
-    expr_color = getattr(VideosModel, params.color_by)
+    if params.color_by  == "none":
+        expr_color = literal_column("'All Videos'")
+    else:
+        expr_color = getattr(VideosModel, params.color_by)
 
     # 5. Formulate selection query utilizing clean, generic targets
     query = select(
@@ -293,11 +356,11 @@ async def get_generic_scatter_plot(db: AsyncSession, filters: Filters, params: S
 
     formatted_scatter = []
     for row in rows:
-        is_x_ratio = params.x in ["negative_ratio", "positive_ratio"]
-        is_y_ratio = params.y in ["negative_ratio", "positive_ratio"]
+        is_x_ratio = params.x in ["views", "likes", "comments_count", "negative_ratio", "positive_ratio"]
+        is_y_ratio = params.y in ["views", "likes", "comments_count", "negative_ratio", "positive_ratio"]
 
-        x_val = round(float(row["x"] or 0.0), 2) if is_x_ratio else int(row["x"] or 0)
-        y_val = round(float(row["y"] or 0.0), 2) if is_y_ratio else int(row["y"] or 0)
+        x_val = round(float(row["x"] or 0.0), 4) if is_x_ratio else int(row["x"] or 0)
+        y_val = round(float(row["y"] or 0.0), 4) if is_y_ratio else int(row["y"] or 0)
 
         formatted_scatter.append({
             "video_id": row["video_id"],
@@ -324,8 +387,172 @@ async def get_dashboard_filter_options(db: AsyncSession) -> dict:
 
     # 3. Unpack into clean sorted lists for your React dropdown menus
     return {
-        "channels": sorted(list(res_channels.all())),
-        "topics": sorted(list(res_topics.all())),
-        "platforms": sorted(list(res_platforms.all())),
-        "duration_buckets": sorted(list(res_buckets.all()))
+        "channel_title": sorted(list(res_channels.all())),
+        "topic": sorted(list(res_topics.all())),
+        "platform": sorted(list(res_platforms.all())),
+        "duration_bucket": sorted(list(res_buckets.all()))
+    }
+
+def get_chart_query_options():
+    # Helper lambda function to reach into Pydantic v2 structure 
+    # and pull the raw tuple choices inside Literal[...]
+    get_literal_choices = lambda model, field_name: list(get_args(model.model_fields[field_name].annotation))
+
+    return {
+        "scatter": {
+            "x": get_literal_choices(ScatterQuery, "x"),
+            "y": get_literal_choices(ScatterQuery, "y"),
+            "color_by": get_literal_choices(ScatterQuery, "color_by")
+        },
+        "heatmap": {
+            "x": get_literal_choices(HeatmapQuery, "x"),
+            "y": get_literal_choices(HeatmapQuery, "y"),
+            "metric": get_literal_choices(HeatmapQuery, "metric")
+        },
+        "topVideos": {
+            "metric": get_literal_choices(TopVideosQuery, "metric")
+        }
+    }   
+
+
+async def get_kpi_dashboard(db: AsyncSession,filters: Filters) -> dict:
+    
+    # 2. Execute all your existing database queries 
+    main_stats = await  get_video_dashboard_stats(db, filters)
+    topic_stats = await get_stats(column="topic", db=db, filters=filters)
+    platform_stats = await get_stats(column="platform", db=db, filters=filters)
+    duration_stats = await get_stats(column="duration_bucket", db=db, filters=filters)
+    top_vids = await get_top_videos(db, filters, TopVideosQuery())
+
+    # 3. Cleanly restructure and transform the raw outputs from your functions
+    # into your exact target nested JSON layout
+    return {
+        "overview": {
+            "total_videos": main_stats["total_videos"],
+            "total_views": main_stats["total_views"],
+            "total_likes": main_stats["total_likes"],
+            "total_comments": main_stats["total_comments"],
+            "avg_duration": main_stats["avg_duration"],
+            "avg_engagement_rate": main_stats["avg_engagement_rate"]
+        },
+        
+        "sentiment": {
+            "positive": main_stats["sentiment_distribution"]["positive"],
+            "neutral": main_stats["sentiment_distribution"]["neutral"],
+            "negative": main_stats["sentiment_distribution"]["negative"]
+        },
+        
+        # Pull required key values dynamically from your generic get_stats loop outputs
+        "topics": [
+            {
+                "topic": item["label"],
+                "video_count": item["total_videos"],
+                "avg_views": item["avg_views"],
+                'avg_likes': item["avg_likes"],
+                "avg_duration": item['avg_duration'],
+                "avg_engagement_rate": item['avg_engagement_rate']
+            }
+            for item in topic_stats
+        ],
+        
+        "platforms": [
+            {
+                "platform": item["label"],
+                "video_count": item["total_videos"],
+                "avg_views": item["avg_views"],
+                'avg_likes': item["avg_likes"],
+                "avg_duration": item['avg_duration'],
+                "avg_engagement_rate": item['avg_engagement_rate']
+            }
+            for item in platform_stats
+        ],
+        
+        "duration_buckets": [
+            {
+                "bucket": item["label"],
+                "video_count": item["total_videos"],
+                "avg_views": item["avg_views"],
+                'avg_likes': item["avg_likes"],
+                "avg_duration": item['avg_duration'],
+                "avg_engagement_rate": item['avg_engagement_rate']
+            }
+            for item in duration_stats
+        ],
+        
+        "top_videos": top_vids
+    }    
+
+async def get_engagement_dashboard(db: AsyncSession, filters: Filters):
+    
+    # 2. RUN IN PARALLEL: Fire all three database query engines simultaneously
+    summary_data = await get_topic_summary_table(db, filters)
+    scatter_data = await get_generic_scatter_plot(db, filters, ScatterQuery())
+    heatmap_data = await get_generic_heatmap(db, filters, HeatmapQuery())
+
+
+    # 3. Structural Output Mapping
+    return {
+        # Your topic summary function already calculates percentages and platforms beautifully!
+        "summary_table": [
+            {
+                "topic": item["topic"],
+                "video_count": item.get("video_count", 0), # Fallback if missing
+                "avg_views": item["avg_views"],
+                "avg_engagement_rate": item["avg_engagement_rate"],
+                "dominant_sentiment": item["dominant_sentiment"],
+                "best_platform": item["best_platform"],
+                "positive_pct": item.get("positive_pct", 0.0), # Maps your table pct fields
+                "negative_pct": item.get("negative_pct", 0.0)
+            }
+            for item in summary_data
+        ],
+
+        # Your scatter function already outputs standard "x", "y", and "group" keys for React!
+        "scatter": scatter_data,
+
+        # Your heatmap function already outputs clean "x", "y", and "value" keys!
+        "heatmap": heatmap_data
+    }
+
+async def get_sentiment_dashboard(db: AsyncSession, filters: Filters):
+
+    topic_raw_stats = await get_stats(column="topic", db=db, filters=filters)
+    platform_raw_stats = await get_stats(column="platform", db=db, filters=filters)
+    channel_raw_stats = await get_stats(column="channel_title", db=db, filters=filters)  
+
+    return {
+        "sentiment_by_topic": [
+            {
+                "topic": item["label"],
+                "positive": item["sentiment_counts"]["positive"],
+                "neutral": item["sentiment_counts"]["neutral"],
+                "negative": item["sentiment_counts"]["negative"],
+                "positive_pct": item["sentiment_percentages"]["positive"],
+                "neutral_pct": item["sentiment_percentages"]["neutral"],
+                "negative_pct": item["sentiment_percentages"]["negative"]
+            } for item in topic_raw_stats
+        ],
+        "sentiment_by_platform": [
+            {
+                "platform": item["label"],
+                "positive": item["sentiment_counts"]["positive"],
+                "neutral": item["sentiment_counts"]["neutral"],
+                "negative": item["sentiment_counts"]["negative"],
+                "positive_pct": item["sentiment_percentages"]["positive"],
+                "neutral_pct": item["sentiment_percentages"]["neutral"],
+                "negative_pct": item["sentiment_percentages"]["negative"]
+            } for item in platform_raw_stats
+        ],
+
+        "sentiment_by_channel": [
+            {
+                "channel": item["label"],
+                "positive": item["sentiment_counts"]["positive"],
+                "neutral": item["sentiment_counts"]["neutral"],
+                "negative": item["sentiment_counts"]["negative"],
+                "positive_pct": item["sentiment_percentages"]["positive"],
+                "neutral_pct": item["sentiment_percentages"]["neutral"],
+                "negative_pct": item["sentiment_percentages"]["negative"]
+            } for item in channel_raw_stats
+        ]
     }
