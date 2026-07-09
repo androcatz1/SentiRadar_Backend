@@ -26,4 +26,11 @@ async_session = async_sessionmaker(engine, expire_on_commit=False)
 async def get_db_static():
     async with async_session() as session:
         yield session    
-        
+
+engine_ts = create_async_engine(Settings.DATABASE_URL, pool_size=10, max_overflow=5)
+async_session_ts = async_sessionmaker(engine_ts, expire_on_commit=False)
+
+# direct connection
+async def get_db_ts():
+    async with async_session_ts() as session:
+        yield session            
