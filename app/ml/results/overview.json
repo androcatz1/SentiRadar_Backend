@@ -1,0 +1,86 @@
+{
+  "datasets": [
+    {
+      "name": "Malaya",
+      "total_rows": 145481,
+      "label_distribution": {
+        "negative": 100790,
+        "positive": 24646,
+        "neutral": 20045
+      }
+    },
+    {
+      "name": "Heuristic",
+      "total_rows": 458079,
+      "label_distribution": {
+        "negative": 181419,
+        "positive": 165709,
+        "neutral": 110951
+      }
+    },
+    {
+      "name": "Merged",
+      "total_rows": 458079,
+      "label_distribution": {
+        "negative": 213034,
+        "positive": 144754,
+        "neutral": 100291
+      }
+    }
+  ],
+  "agreement": {
+    "total_overlap_rows": 145473,
+    "agreed_rows": 94116,
+    "agreement_rate": 0.647,
+    "cohens_kappa": 0.4,
+    "per_class_agreement": {
+      "neutral": 0.5971,
+      "positive": 0.7484,
+      "negative": 0.6321
+    }
+  },
+  "model_comparison": [
+    {
+      "model": "Malaya",
+      "accuracy": 0.881,
+      "macro_avg": {
+        "precision": 0.8153,
+        "recall": 0.8729,
+        "f1": 0.8331
+      },
+      "weighted_avg": {
+        "precision": 0.9072,
+        "recall": 0.881,
+        "f1": 0.8884
+      }
+    },
+    {
+      "model": "Heuristic",
+      "accuracy": 0.7155,
+      "macro_avg": {
+        "precision": 0.7076,
+        "recall": 0.7119,
+        "f1": 0.7064
+      },
+      "weighted_avg": {
+        "precision": 0.7282,
+        "recall": 0.7155,
+        "f1": 0.7191
+      }
+    },
+    {
+      "model": "Merged",
+      "accuracy": 0.7068,
+      "macro_avg": {
+        "precision": 0.6909,
+        "recall": 0.7014,
+        "f1": 0.69
+      },
+      "weighted_avg": {
+        "precision": 0.7283,
+        "recall": 0.7068,
+        "f1": 0.7128
+      }
+    }
+  ]
+}
