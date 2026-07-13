@@ -185,7 +185,7 @@ async def get_top_keywords(db: AsyncSession, video_ids:list):
     word_freq_df = word_freq_df.sort_values(by="freq", ascending=False)
 
     # take top 25 words for keyword frequency chart
-    top_words = word_freq_df.head(25).to_dict(orient="records")
+    top_words = word_freq_df.head(50).to_dict(orient="records")
     
     return top_words
 
