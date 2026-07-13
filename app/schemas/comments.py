@@ -36,3 +36,5 @@ class UserInputSchema(BaseModel):
             
         # 5. Return the modified dictionary back to Pydantic
         return data
+
+    model_key: str
