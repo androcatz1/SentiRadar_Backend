@@ -39,6 +39,12 @@ class Settings:
         2.0: "negative"
     }
 
+    SENTIMENT_MAP_INT = {
+        "neutral": 0,
+        "positive": 1,
+        "negative": 2
+    }
+
 
 
 class Gemini:
