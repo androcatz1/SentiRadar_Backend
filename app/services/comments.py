@@ -28,14 +28,19 @@ async def get_paginated_video_comments(
     count_result = await db.execute(count_query)
     total_comments = count_result.scalar() or 0
 
-    # 2. Base query to fetch the comment text records
+    # 2. Build the base query sequentially to handle conditional filtering safely
     comments_query = (
         select(CommentsModel.text, CommentsModel.text_processed, CommentsModel.label)
         .where(CommentsModel.video_id == video_id)
-        # Apply page window constraints
-        .limit(pagination.limit)
-        .offset(pagination.offset)
     )
+    
+    # Correctly append conditional where clauses before applying limits
+    if pagination.label is not None:
+        comments_query = comments_query.where(CommentsModel.label == Settings.SENTIMENT_MAP_INT.get(pagination.label))
+        
+    # Apply page window constraints last
+    comments_query = comments_query.limit(pagination.limit).offset(pagination.offset)
+
     
     result = await db.execute(comments_query)
     rows = result.mappings().all()
