@@ -2,11 +2,11 @@ import pandas as pd
 
 from app.etl.transform.comments import run_pipeline
 from pydantic import BaseModel, Field, model_validator
-from typing import Optional
 
 class PaginationParams(BaseModel):
     limit: int = Field(default=20, ge=1, le=50) # Enforce a safe cap max of 50 per page
     offset: int = Field(default=0, ge=0)
+    label: str|None = None
 
 class UserInputSchema(BaseModel):
     text: str = None
