@@ -1,0 +1,412 @@
+{
+  "model": "merged_LR",
+  "search_method": "RandomizedSearchCV",
+  "cv_folds": 5,
+  "n_iter": 20,
+  "scoring_metric": "f1_macro",
+  "best_score": 0.6975,
+  "best_params": {
+    "tfidf": {
+      "stop_words": "custom_list",
+      "ngram_range": [
+        1,
+        2
+      ],
+      "max_features": 20000,
+      "min_df": 5,
+      "sublinear_tf": true
+    },
+    "classifier": {
+      "C": 1
+    }
+  },
+  "best_fold_scores": [
+    0.6982,
+    0.6969,
+    0.699,
+    0.6939,
+    0.6993
+  ],
+  "search_results": [
+    {
+      "rank": 1,
+      "mean_test_score": 0.6975,
+      "std_test_score": 0.002,
+      "mean_train_score": 0.7379,
+      "std_train_score": 0.0018,
+      "mean_fit_time": 42.28,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 20000,
+        "min_df": 5,
+        "sublinear_tf": true,
+        "C": 1
+      }
+    },
+    {
+      "rank": 2,
+      "mean_test_score": 0.6972,
+      "std_test_score": 0.002,
+      "mean_train_score": 0.7385,
+      "std_train_score": 0.0004,
+      "mean_fit_time": 51.59,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 20000,
+        "min_df": 3,
+        "sublinear_tf": true,
+        "C": 1
+      }
+    },
+    {
+      "rank": 3,
+      "mean_test_score": 0.6969,
+      "std_test_score": 0.0019,
+      "mean_train_score": 0.7355,
+      "std_train_score": 0.0031,
+      "mean_fit_time": 70.96,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 20000,
+        "min_df": 5,
+        "sublinear_tf": true,
+        "C": 1
+      }
+    },
+    {
+      "rank": 4,
+      "mean_test_score": 0.6963,
+      "std_test_score": 0.002,
+      "mean_train_score": 0.7361,
+      "std_train_score": 0.0015,
+      "mean_fit_time": 60.1,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 20000,
+        "min_df": 5,
+        "sublinear_tf": false,
+        "C": 1
+      }
+    },
+    {
+      "rank": 5,
+      "mean_test_score": 0.6961,
+      "std_test_score": 0.0021,
+      "mean_train_score": 0.7353,
+      "std_train_score": 0.0008,
+      "mean_fit_time": 86.58,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 20000,
+        "min_df": 3,
+        "sublinear_tf": false,
+        "C": 1
+      }
+    },
+    {
+      "rank": 6,
+      "mean_test_score": 0.6961,
+      "std_test_score": 0.0021,
+      "mean_train_score": 0.7355,
+      "std_train_score": 0.0011,
+      "mean_fit_time": 97.44,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 20000,
+        "min_df": 5,
+        "sublinear_tf": false,
+        "C": 1
+      }
+    },
+    {
+      "rank": 7,
+      "mean_test_score": 0.696,
+      "std_test_score": 0.0025,
+      "mean_train_score": 0.7382,
+      "std_train_score": 0.0011,
+      "mean_fit_time": 56.95,
+      "params": {
+        "stop_words": null,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 20000,
+        "min_df": 3,
+        "sublinear_tf": false,
+        "C": 1
+      }
+    },
+    {
+      "rank": 8,
+      "mean_test_score": 0.6949,
+      "std_test_score": 0.0022,
+      "mean_train_score": 0.7204,
+      "std_train_score": 0.0005,
+      "mean_fit_time": 40.62,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 3,
+        "sublinear_tf": true,
+        "C": 1
+      }
+    },
+    {
+      "rank": 9,
+      "mean_test_score": 0.694,
+      "std_test_score": 0.0024,
+      "mean_train_score": 0.7198,
+      "std_train_score": 0.0006,
+      "mean_fit_time": 44.55,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 5,
+        "sublinear_tf": false,
+        "C": 1
+      }
+    },
+    {
+      "rank": 10,
+      "mean_test_score": 0.6939,
+      "std_test_score": 0.0024,
+      "mean_train_score": 0.7194,
+      "std_train_score": 0.0011,
+      "mean_fit_time": 41.37,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 3,
+        "sublinear_tf": false,
+        "C": 1
+      }
+    },
+    {
+      "rank": 11,
+      "mean_test_score": 0.6929,
+      "std_test_score": 0.002,
+      "mean_train_score": 0.7244,
+      "std_train_score": 0.0009,
+      "mean_fit_time": 50.11,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 5,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 12,
+      "mean_test_score": 0.6928,
+      "std_test_score": 0.0021,
+      "mean_train_score": 0.7235,
+      "std_train_score": 0.0009,
+      "mean_fit_time": 77.76,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 10000,
+        "min_df": 3,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 13,
+      "mean_test_score": 0.6918,
+      "std_test_score": 0.0021,
+      "mean_train_score": 0.7237,
+      "std_train_score": 0.0007,
+      "mean_fit_time": 48.48,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 3,
+        "sublinear_tf": false,
+        "C": 10
+      }
+    },
+    {
+      "rank": 14,
+      "mean_test_score": 0.6917,
+      "std_test_score": 0.0018,
+      "mean_train_score": 0.7223,
+      "std_train_score": 0.0008,
+      "mean_fit_time": 73.39,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 10000,
+        "min_df": 5,
+        "sublinear_tf": false,
+        "C": 10
+      }
+    },
+    {
+      "rank": 15,
+      "mean_test_score": 0.691,
+      "std_test_score": 0.0019,
+      "mean_train_score": 0.7234,
+      "std_train_score": 0.0006,
+      "mean_fit_time": 61.0,
+      "params": {
+        "stop_words": null,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 3,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 16,
+      "mean_test_score": 0.6909,
+      "std_test_score": 0.0024,
+      "mean_train_score": 0.7234,
+      "std_train_score": 0.0008,
+      "mean_fit_time": 58.3,
+      "params": {
+        "stop_words": null,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 10000,
+        "min_df": 5,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 17,
+      "mean_test_score": 0.69,
+      "std_test_score": 0.0016,
+      "mean_train_score": 0.7475,
+      "std_train_score": 0.0005,
+      "mean_fit_time": 98.38,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 20000,
+        "min_df": 5,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 18,
+      "mean_test_score": 0.6897,
+      "std_test_score": 0.0018,
+      "mean_train_score": 0.7476,
+      "std_train_score": 0.0007,
+      "mean_fit_time": 101.06,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          3
+        ],
+        "max_features": 20000,
+        "min_df": 3,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 19,
+      "mean_test_score": 0.6897,
+      "std_test_score": 0.0031,
+      "mean_train_score": 0.7492,
+      "std_train_score": 0.0011,
+      "mean_fit_time": 87.55,
+      "params": {
+        "stop_words": null,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 20000,
+        "min_df": 3,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    },
+    {
+      "rank": 20,
+      "mean_test_score": 0.6895,
+      "std_test_score": 0.0017,
+      "mean_train_score": 0.7492,
+      "std_train_score": 0.0008,
+      "mean_fit_time": 74.12,
+      "params": {
+        "stop_words": "custom_list",
+        "ngram_range": [
+          1,
+          2
+        ],
+        "max_features": 20000,
+        "min_df": 5,
+        "sublinear_tf": true,
+        "C": 10
+      }
+    }
+  ]
+}
