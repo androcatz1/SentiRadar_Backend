@@ -6,13 +6,15 @@ with open("app/ml/results/overview.json") as f:
     OVERVIEW = json.load(f)
 
 PERFORMANCE = {}
-for model_name in ["malaya", "heuristic", "merged"]:
-    with open(f"app/ml/results/performance_{model_name}.json") as f:
-        PERFORMANCE[model_name] = json.load(f)
+for dataset in ["malaya", "heuristic", "merged"]:
+    for model in ["logreg", "cnb", "lgbm"]:
+        key = f"{dataset}_{model}"
+        with open(f"app/ml/results/performance_{dataset}_{model}.json") as f:
+            PERFORMANCE[key] = json.load(f)
 
 TUNING = {}
 for model_name in ["malaya", "heuristic", "merged"]:
-    with open(f"app/ml/results/tuning_{model_name}_old.json") as f:
+    with open(f"app/ml/results/tuning_{model_name}_lr.json") as f:
         TUNING[model_name] = json.load(f)
 
 MODELS = {
