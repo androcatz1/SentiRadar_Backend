@@ -24,9 +24,10 @@ async def make_prediction(input: UserInputSchema):
 def get_overview():
     return load_overview()
 
-@router.get("/performance/{model}")
-def get_performance(model: Literal['malaya', 'heuristic', 'merged']):
-    return load_performance(model)
+@router.get("/performance/{dataset}/{model}")
+def get_performance(dataset: Literal["malaya", "heuristic", "merged"],
+                    model:   Literal["logreg", "cnb", "lgbm"]):
+        return load_performance(dataset, model)
 
 @router.get("/tuning/{model}")
 def get_tuning(model: Literal['malaya', 'heuristic', 'merged']):
