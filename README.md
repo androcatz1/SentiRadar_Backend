@@ -2,6 +2,23 @@
 
 FastAPI backend for the final year project. The service ingests YouTube video and comment data, transforms it with an ETL pipeline, stores it in PostgreSQL, and exposes analytics and machine learning endpoints for a separate frontend.
 
+## 📌 Problem Statement
+
+Social media has become a major source of news consumption in Malaysia, but public reaction is difficult to interpret at scale. YouTube comments are often code-mixed in Malay and English, which makes standard sentiment models less reliable, while manual review is slow and can be affected by bias. At the same time, engagement metrics like views and likes do not fully reflect audience sentiment, so analysts need a system that can capture both popularity and opinion in one place.
+
+## 🎯 Purpose of the System
+
+This system is designed to help analysts monitor Malaysian video news more effectively by collecting YouTube data, cleaning bilingual text, classifying comment sentiment, and linking sentiment trends with engagement metrics. The goal is to provide a clearer, data-driven view of public response through an interactive dashboard and automated backend pipeline.
+
+## ✅ What This System Solves
+
+- ⏱️ Speeds up comment collection and processing so large datasets can be analysed without manual work.
+- 🗣️ Improves sentiment analysis for Malay-English code-mixed text, slang, and local expressions.
+- 📈 Combines sentiment with engagement metrics so popularity is not confused with public approval.
+- 👀 Gives a clearer view of public opinion, helping users understand the reasons behind reactions.
+- 🚨 Supports early detection of negative sentiment shifts before issues grow into larger problems.
+- 🤝 Helps teams make more confident, data-driven decisions with a consistent source of insight.
+
 ## 🧩 Architecture
 
 ![Tech Stack Architecture](Tech%20Stack%20Architecture.png)
