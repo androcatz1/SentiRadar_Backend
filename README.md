@@ -1,6 +1,6 @@
-# FYP Backend 🚀
+# SentiRadar 🚀
 
-FastAPI backend for the final year project. The service ingests YouTube video and comment data, transforms it with an ETL pipeline, stores it in PostgreSQL, and exposes analytics and machine learning endpoints for a separate frontend.
+SentiRadar is a FastAPI backend for the final year project. The service ingests YouTube video and comment data, transforms it with an ETL pipeline, stores it in PostgreSQL, and exposes analytics and machine learning endpoints for a separate frontend.
 
 ## 📌 Problem Statement
 
