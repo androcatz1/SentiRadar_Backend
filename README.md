@@ -61,6 +61,12 @@ The diagram above shows the full flow: analysis and modelling, the containerized
 
 Base routes are mounted under `/api`.
 
+#### `/api/analytics/dashboard`
+
+- `GET /api/analytics/dashboard/kpi` - KPI dashboard data.
+- `GET /api/analytics/dashboard/engagement` - engagement dashboard data.
+- `GET /api/analytics/dashboard/sentiment` - sentiment dashboard data.
+
 ### `/api/videos`
 
 - `GET /api/videos/get_video?url=...` - ingest a new video if it does not already exist.
@@ -84,9 +90,6 @@ Base routes are mounted under `/api`.
 - `GET /api/analytics/heatmap` - heatmap data.
 - `GET /api/analytics/scatter` - scatter plot data.
 - `GET /api/analytics/filter-options` - dashboard filter metadata.
-- `GET /api/analytics/dashboard/kpi` - KPI dashboard data.
-- `GET /api/analytics/dashboard/engagement` - engagement dashboard data.
-- `GET /api/analytics/dashboard/sentiment` - sentiment dashboard data.
 
 ### `/api/timeseries`
 
