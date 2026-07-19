@@ -42,6 +42,7 @@ The diagram above shows the full flow: analysis and modelling, the containerized
 - pandas, NumPy, scikit-learn
 - Joblib for serialized vectorizers and classifiers
 - Jupyter for experimentation and model development
+- GitHub Actions for automation and CI/CD, linked to [YT_TimeSeries](https://github.com/androcatz1/YT_TimeSeries.git)
 - Docker for containerized deployment
 
 ## 🗂️ Project Structure
@@ -145,3 +146,4 @@ The backend is configured to allow requests from a local frontend running on `ht
 - Topic classification is handled during the ETL pipeline using Gemini-assisted labelling.
 - Comment sentiment is predicted using the saved model artifacts in `app/ml/`.
 - Model files and vectorizers are stored as Joblib artifacts so the API can serve inference quickly.
+- GitHub Actions automation is linked to [YT_TimeSeries](https://github.com/androcatz1/YT_TimeSeries.git) for workflow automation.
