@@ -36,8 +36,9 @@ The diagram above shows the full flow: analysis and modelling, the containerized
 
 - FastAPI
 - Python
-- PostgreSQL
+- YouTube Data API V3
 - Supabase
+- PostgreSQL
 - SQLAlchemy
 - pandas, NumPy, scikit-learn
 - Joblib for serialized vectorizers and classifiers
