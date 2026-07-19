@@ -1,6 +1,6 @@
 # SentiRadar 🚀
 
-SentiRadar is a FastAPI backend for the final year project. The service ingests YouTube video and comment data, transforms it with an ETL pipeline, stores it in PostgreSQL, and exposes analytics and machine learning endpoints for a separate frontend.
+SentiRadar is a FastAPI backend for the final year project, linked to the [YT_TimeSeries automation repository](https://github.com/androcatz1/YT_TimeSeries.git) and the [SentiRadar frontend repository](https://github.com/androcatz1/SentiRadar-Frontend.git). The service ingests YouTube video and comment data, transforms it with an ETL pipeline, stores it in PostgreSQL, and exposes analytics and machine learning endpoints for the frontend.
 
 ## 📌 Problem Statement
 
