@@ -61,12 +61,20 @@ The diagram above shows the full flow: analysis and modelling, the containerized
 
 Base routes are mounted under `/api`.
 
+### `/api/videos`
+
 - `GET /api/videos/get_video?url=...` - ingest a new video if it does not already exist.
 - `GET /api/videos/{video_id}/overview` - video-level summary.
 - `GET /api/videos/{video_id}/comments` - paginated comments for a video.
 - `GET /api/videos/{video_id}/keywords` - top keywords for a video.
 - `GET /api/videos/get_video_ids` - filtered video listing.
+
+### `/api/comments`
+
 - `GET /api/comments/get_comments?video_id=...` - ingest comments for a video.
+
+### `/api/analytics`
+
 - `GET /api/analytics/overview` - dashboard KPIs.
 - `GET /api/analytics/distribution/{column}` - grouped distributions.
 - `GET /api/analytics/top-videos` - ranked videos by a selected metric.
@@ -79,8 +87,14 @@ Base routes are mounted under `/api`.
 - `GET /api/analytics/dashboard/kpi` - KPI dashboard data.
 - `GET /api/analytics/dashboard/engagement` - engagement dashboard data.
 - `GET /api/analytics/dashboard/sentiment` - sentiment dashboard data.
+
+### `/api/timeseries`
+
 - `GET /api/timeseries/video-metrics` - time-series metrics.
 - `GET /api/timeseries/aggregate/{group_by}` - grouped time-series aggregation.
+
+### `/api/model`
+
 - `POST /api/model/predict` - sentiment prediction for input text.
 - `GET /api/model/overview` - model overview metadata.
 - `GET /api/model/performance/{dataset}/{model}` - saved evaluation metrics.
