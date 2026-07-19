@@ -1,83 +1,21 @@
-# FYP Backend
+# FYP Backend 🚀
 
 FastAPI backend for the final year project. The service ingests YouTube video and comment data, transforms it with an ETL pipeline, stores it in PostgreSQL, and exposes analytics and machine learning endpoints for a separate frontend.
 
-## Architecture
+## 🧩 Architecture
 
-```mermaid
-flowchart LR
-    subgraph AM[Analysis & Modelling]
-        J[Jupyter]
-        JL[Joblib Models]
-        SK[scikit-learn]
-    end
+![Tech Stack Architecture](Tech%20Stack%20Architecture.png)
 
-    subgraph FE[Frontend]
-        UI[React + Tailwind + Vite]
-    end
+The diagram above shows the full flow: analysis and modelling, the containerized FastAPI backend, PostgreSQL storage, ETL automation, ML inference, and the frontend integration.
 
-    subgraph API[Containerized Backend]
-        F[FastAPI]
-        V[Videos API]
-        C[Comments API]
-        A[Analytics API]
-        T[Time Series API]
-        M[Model API]
-        ETL[ETL Pipeline]
-    end
+## ✨ What This Project Does
 
-    subgraph DB[Database]
-        P[(PostgreSQL)]
-        VM[video_metrics]
-        CM[comments]
-        TS[video_metrics_time_series_transformed]
-    end
+- 🎥 Pulls YouTube video metadata and top-level comments.
+- 🧹 Cleans and transforms raw data into analytics-ready tables.
+- 📊 Serves dashboards, chart data, and per-video insights through FastAPI.
+- 🤖 Exposes ML prediction endpoints for sentiment classification.
 
-    subgraph DEV[Dev Tools]
-        GH[GitHub / CI-CD]
-        POSTMAN[API Testing]
-    end
-
-    subgraph LLM[LLM / Transformers]
-        G[Gemini]
-        LAB[Data labelling]
-    end
-
-    UI <--> F
-    F --> V
-    F --> C
-    F --> A
-    F --> T
-    F --> M
-
-    V --> P
-    C --> P
-    A --> P
-    T --> P
-    M --> JL
-
-    ETL --> P
-    ETL --> G
-    G --> LAB
-
-    P --> VM
-    P --> CM
-    P --> TS
-
-    GH --- API
-    POSTMAN --- API
-    J --- AM
-    SK --- AM
-```
-
-## What This Project Does
-
-- Pulls YouTube video metadata and top-level comments.
-- Cleans and transforms raw data into analytics-ready tables.
-- Serves dashboards, chart data, and per-video insights through FastAPI.
-- Exposes ML prediction endpoints for sentiment classification.
-
-## Tech Stack
+## 🛠️ Tech Stack
 
 - FastAPI
 - Python
@@ -89,7 +27,7 @@ flowchart LR
 - Jupyter for experimentation and model development
 - Docker for containerized deployment
 
-## Project Structure
+## 🗂️ Project Structure
 
 - `app/main.py` - FastAPI app entry point and router registration.
 - `app/routers/` - API routes for videos, comments, analytics, time series, and ML models.
@@ -100,7 +38,7 @@ flowchart LR
 - `app/models/` - SQLAlchemy models.
 - `app/schemas/` - Pydantic request and filter schemas.
 
-## API Overview
+## 🔌 API Overview
 
 Base routes are mounted under `/api`.
 
@@ -129,7 +67,7 @@ Base routes are mounted under `/api`.
 - `GET /api/model/performance/{dataset}/{model}` - saved evaluation metrics.
 - `GET /api/model/tuning/{model}` - tuning results for a model family.
 
-## Data Flow
+## 🔄 Data Flow
 
 1. A user submits a YouTube URL through the backend or frontend.
 2. The ETL layer fetches metadata and comments from the YouTube Data API.
@@ -138,13 +76,13 @@ Base routes are mounted under `/api`.
 5. Analytics routes query the database and return chart-ready JSON.
 6. The ML endpoint loads saved models and predicts sentiment for new text.
 
-## Database Tables
+## 🗃️ Database Tables
 
 - `video_metrics` - main video analytics table.
 - `comments` - cleaned comment records with predicted sentiment labels.
 - `video_metrics_time_series_transformed` - transformed dataset for time-series analysis.
 
-## Environment Variables
+## 🔐 Environment Variables
 
 Set these in your `.env` file:
 
@@ -153,7 +91,7 @@ Set these in your `.env` file:
 - `YOUTUBE_API_KEY` - YouTube Data API key.
 - `GEMINI_API_KEY` - Gemini key used for topic labelling.
 
-## Local Setup
+## ⚙️ Local Setup
 
 1. Create and activate a Python virtual environment.
 2. Install dependencies:
@@ -167,25 +105,25 @@ pip install -r requirements.txt
 5. Run the API:
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload 
 ```
 
 The API will be available at `http://127.0.0.1:8000`.
 
-## Docker
+## 🐳 Docker
 
 Build and run the backend container:
 
 ```bash
 docker build -t fyp-backend .
-docker run -p 8000:8000 --env-file .env 
+docker run -p 8000:8000 --env-file .env fyp-backend
 ```
 
-## Frontend Integration
+## 🌐 Frontend Integration
 
 The backend is configured to allow requests from a local frontend running on `http://localhost:5173` and `http://127.0.0.1:5173`.
 
-## Notes
+## 📝 Notes
 
 - Topic classification is handled during the ETL pipeline using Gemini-assisted labelling.
 - Comment sentiment is predicted using the saved model artifacts in `app/ml/`.
